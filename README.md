@@ -14,9 +14,13 @@ You'll work through increasingly complex scenarios covering:
 
 ## 🎯 Why E-commerce?
 
-E-commerce systems must prioritize **strong consistency**: orders, inventory, and payment records **must not be lost or duplicated**. As traffic grows, so do the demands for availability, observability, and fault isolation. This project reflects real operational trade-offs developers and SREs face daily when building production-grade systems.
+E-commerce systems must prioritize **strong consistency**: orders, inventory, and payment records 
+**must not be lost or duplicated**. As traffic grows, so do the demands for availability, observability, 
+and fault isolation. This project reflects real operational trade-offs developers and SREs face daily 
+when building production-grade systems.
 
-Whether you're tuning WAL settings, scaling read replicas, defining SLAs, or simulating geo-redundant clusters, this project grows with you—just like your business would.
+Whether you're tuning WAL settings, scaling read replicas, defining SLAs, or simulating geo-redundant clusters, 
+this project grows with you -- just like your business would.
 
 ---
 

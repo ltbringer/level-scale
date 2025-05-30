@@ -1,0 +1,46 @@
+version: "2"
+linters:
+  enable:
+    - gocritic
+    - revive
+  settings:
+    revive:
+      severity: warning
+      rules:
+        - name: indent-error-flow
+          severity: error
+        - name: blank-imports
+          severity: error
+        - name: import-shadowing
+          severity: error
+        - name: var-naming
+          severity: warning
+  exclusions:
+    generated: lax
+    rules:
+      - path: _test\.go
+        text: should not use dot imports
+      - linters:
+          - revive
+          - struct
+        path: models/
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  enable:
+    - gofmt
+    - goimports
+  settings:
+    gofmt:
+      simplify: true
+    goimports:
+      local-prefixes:
+        - level-scale
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$

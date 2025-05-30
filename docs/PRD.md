@@ -10,7 +10,7 @@
 ## 🎯 Purpose
 
 This document defines the core functionality for the MVP version of a scalable e-commerce platform 
-where users can act as **buyers**, **sellers**, or **both**. It outlines the expected user roles, 
+where users can act as **buyers**, **sellers**, or **both**. It outlines the expected User roles, 
 authentication flows, and critical API-driven interactions that must be supported.
 
 ---
@@ -33,7 +33,7 @@ authentication flows, and critical API-driven interactions that must be supporte
 - list and manage products (with inventory, price, description)
 
 ### 3. Dual Role
-- A single user can act as both buyer and seller
+- A single User can act as both buyer and seller
 
 ---
 
@@ -48,9 +48,9 @@ authentication flows, and critical API-driven interactions that must be supporte
 ## 📦 Core Features & API Requirements
 
 ### 🧑 User APIs
-- `POST /register` – Register user (buyer/seller/both)
+- `POST /register` – Register User (buyer/seller/both)
 - `POST /login` – Login and get auth token
-- `GET /me` – Fetch user profile and roles
+- `GET /me` – Fetch User profile and roles
 
 ### 🏬 Shop & Product Management (Seller Only)
 - `POST /shops` – Create seller shop

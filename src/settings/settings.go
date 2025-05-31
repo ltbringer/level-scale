@@ -1,7 +1,7 @@
 package settings
 
 import (
-	"level-scale/db"
+	"level-scale/dbmanager"
 	"level-scale/logger"
 	"os"
 	"strconv"
@@ -10,6 +10,9 @@ import (
 var (
 	JWTSecret []byte
 	DbConfig  *db.Config
+	JWTSecret   []byte
+	DbConfig    *dbmanager.Config
+	ServicePort uint16
 )
 
 func Init() {
@@ -45,8 +48,8 @@ func stringToBool(value string) bool {
 	return b
 }
 
-func dbConfigFromEnv() *db.Config {
-	c := &db.Config{
+func dbConfigFromEnv() *dbmanager.Config {
+	c := &dbmanager.Config{
 		Host:     getEnv("DB_HOST"),
 		Port:     parsePort("DB_PORT"),
 		User:     getEnv("DB_USER"),

@@ -5,7 +5,7 @@ import (
 	"level-scale/logger"
 	"net/http"
 
-	"level-scale/db"
+	"level-scale/dbmanager"
 	"level-scale/middleware"
 	"level-scale/models"
 )
@@ -18,13 +18,13 @@ func CheckoutHandler(w http.ResponseWriter, r *http.Request) {
 	userID := middleware.GetUserID(r)
 
 	var cart models.Cart
-	if err := db.Db.First(&cart, "user_id = ?", userID).Error; err != nil {
+	if err := dbmanager.Db.First(&cart, "user_id = ?", userID).Error; err != nil {
 		http.Error(w, "no active cart", http.StatusBadRequest)
 		return
 	}
 
 	var cartItems []models.CartItem
-	if err := db.Db.Where("cart_id = ?", cart.ID).Find(&cartItems).Error; err != nil {
+	if err := dbmanager.Db.Where("cart_id = ?", cart.ID).Find(&cartItems).Error; err != nil {
 		http.Error(w, "could not load cart items", http.StatusInternalServerError)
 		return
 	}
@@ -46,7 +46,7 @@ func CheckoutHandler(w http.ResponseWriter, r *http.Request) {
 		ShippingAddress: req.ShippingAddress,
 	}
 
-	if err := db.Db.Create(&order).Error; err != nil {
+	if err := dbmanager.Db.Create(&order).Error; err != nil {
 		http.Error(w, "could not create order", http.StatusInternalServerError)
 		return
 	}
@@ -54,7 +54,7 @@ func CheckoutHandler(w http.ResponseWriter, r *http.Request) {
 	var total float32
 	for _, item := range cartItems {
 		var product models.Product
-		if err := db.Db.First(&product, item.ProductID).Error; err != nil {
+		if err := dbmanager.Db.First(&product, item.ProductID).Error; err != nil {
 			http.Error(w, "product not found", http.StatusBadRequest)
 			return
 		}
@@ -65,7 +65,7 @@ func CheckoutHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		product.Stock -= uint16(item.Quantity)
-		db.Db.Save(&product)
+		dbmanager.Db.Save(&product)
 
 		orderItem := models.OrderItem{
 			OrderID:   order.ID,
@@ -73,7 +73,7 @@ func CheckoutHandler(w http.ResponseWriter, r *http.Request) {
 			Quantity:  item.Quantity,
 			Price:     product.Price,
 		}
-		db.Db.Create(&orderItem)
+		dbmanager.Db.Create(&orderItem)
 
 		total += float32(item.Quantity) * product.Price
 	}
@@ -83,7 +83,7 @@ func CheckoutHandler(w http.ResponseWriter, r *http.Request) {
 		Amount:    total,
 		CreatedAt: order.CreatedAt,
 	}
-	db.Db.Create(&invoice)
+	dbmanager.Db.Create(&invoice)
 
 	delivery := models.Delivery{
 		OrderID:    order.ID,
@@ -91,8 +91,8 @@ func CheckoutHandler(w http.ResponseWriter, r *http.Request) {
 		Status:     "scheduled",
 	}
 
-	db.Db.Create(&delivery)
-	db.Db.Where("cart_id = ?", cart.ID).Delete(&models.CartItem{})
+	dbmanager.Db.Create(&delivery)
+	dbmanager.Db.Where("cart_id = ?", cart.ID).Delete(&models.CartItem{})
 	w.WriteHeader(http.StatusCreated)
 	err := json.NewEncoder(w).Encode(map[string]interface{}{"orderId": order.ID})
 	if err != nil {

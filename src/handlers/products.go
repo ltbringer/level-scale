@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"level-scale/db"
+	"level-scale/dbmanager"
 	"level-scale/logger"
 	"level-scale/middleware"
 	"level-scale/models"
@@ -22,7 +22,7 @@ func CreateProductHandler(w http.ResponseWriter, r *http.Request) {
 	userID := middleware.GetUserID(r)
 
 	var shop models.Shop
-	if err := db.Db.First(&shop, "seller_id = ?", userID).Error; err != nil {
+	if err := dbmanager.Db.First(&shop, "seller_id = ?", userID).Error; err != nil {
 		http.Error(w, "no shop found for seller", http.StatusBadRequest)
 		return
 	}
@@ -41,7 +41,7 @@ func CreateProductHandler(w http.ResponseWriter, r *http.Request) {
 		Stock:       req.Stock,
 	}
 
-	if err := db.Db.Create(&product).Error; err != nil {
+	if err := dbmanager.Db.Create(&product).Error; err != nil {
 		logger.Log.Errorw("product creation failed", "err", err)
 		http.Error(w, "failed to create product", http.StatusInternalServerError)
 		return
@@ -57,6 +57,7 @@ func CreateProductHandler(w http.ResponseWriter, r *http.Request) {
 
 func GetAllProductsHandler(w http.ResponseWriter, r *http.Request) {
 	query := db.Db.Model(&models.Product{})
+	query := dbmanager.Db.Model(&models.Product{})
 
 	limit, err := strconv.Atoi(r.URL.Query().Get("limit"))
 	if err != nil || limit <= 0 || limit > 100 {
@@ -81,7 +82,6 @@ func GetAllProductsHandler(w http.ResponseWriter, r *http.Request) {
 	var products []models.Product
 	if err := query.Limit(limit).Offset(offset).Find(&products).Error; err != nil {
 		http.Error(w, "failed to fetch products", http.StatusInternalServerError)
-		return
 	}
 
 	w.WriteHeader(http.StatusOK)

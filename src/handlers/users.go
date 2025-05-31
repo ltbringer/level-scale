@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
-	"level-scale/db"
+	"level-scale/dbmanager"
 	"level-scale/logger"
 	"level-scale/models"
 	"level-scale/settings"
@@ -43,7 +43,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		IsSeller:     req.IsSeller,
 	}
 
-	if err := db.Db.Create(&user).Error; err != nil {
+	if err := dbmanager.Db.Create(&user).Error; err != nil {
 		logger.Log.Warnw("register failed", "err", err)
 		http.Error(w, "email already exists or DB error", http.StatusBadRequest)
 		return
@@ -65,7 +65,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "invalid input", http.StatusBadRequest)
 	}
 	var user models.User
-	if err := db.Db.First(&user, "email = ?", strings.ToLower(req.Email)).Error; err != nil {
+	if err := dbmanager.Db.First(&user, "email = ?", strings.ToLower(req.Email)).Error; err != nil {
 		logger.Log.Errorw("Invalid User", "email", req.Email, "err", err)
 		http.Error(w, "invalid credentials", http.StatusUnauthorized)
 		return

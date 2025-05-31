@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"level-scale/db"
+	"level-scale/dbmanager"
 	"level-scale/middleware"
 	"level-scale/models"
 )
@@ -27,13 +27,13 @@ func ReturnItemsHandler(w http.ResponseWriter, r *http.Request) {
 
 	for _, req := range reqs {
 		var item models.OrderItem
-		if err := db.Db.First(&item, "id = ?", req.OrderItemID).Error; err != nil {
+		if err := dbmanager.Db.First(&item, "id = ?", req.OrderItemID).Error; err != nil {
 			http.Error(w, "order item not found", http.StatusBadRequest)
 			return
 		}
 
 		var order models.Order
-		if err := db.Db.First(&order, "id = ?", item.OrderID).Error; err != nil || order.UserID != userID {
+		if err := dbmanager.Db.First(&order, "id = ?", item.OrderID).Error; err != nil || order.UserID != userID {
 			http.Error(w, "unauthorized return attempt", http.StatusUnauthorized)
 			return
 		}
@@ -46,7 +46,7 @@ func ReturnItemsHandler(w http.ResponseWriter, r *http.Request) {
 			CreatedAt:    time.Now(), // optional since GORM can auto-create
 		}
 
-		if err := db.Db.Create(&ret).Error; err != nil {
+		if err := dbmanager.Db.Create(&ret).Error; err != nil {
 			http.Error(w, "failed to create return", http.StatusInternalServerError)
 			return
 		}

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"level-scale/db"
+	"level-scale/dbmanager"
 	"level-scale/middleware"
 	"level-scale/models"
 )
@@ -19,7 +19,7 @@ func AddToCartHandler(w http.ResponseWriter, r *http.Request) {
 	userID := middleware.GetUserID(r)
 
 	var cart models.Cart
-	if err := db.Db.FirstOrCreate(&cart, models.Cart{UserID: userID}).Error; err != nil {
+	if err := dbmanager.Db.FirstOrCreate(&cart, models.Cart{UserID: userID}).Error; err != nil {
 		http.Error(w, "could not get or create cart", http.StatusInternalServerError)
 		return
 	}
@@ -34,13 +34,13 @@ func AddToCartHandler(w http.ResponseWriter, r *http.Request) {
 
 	for _, req := range items {
 		var item models.CartItem
-		err := db.Db.
+		err := dbmanager.Db.
 			Where("cart_id = ? AND product_id = ?", cart.ID, req.ProductID).
 			First(&item).Error
 
 		if err == nil {
 			item.Quantity += req.Quantity
-			if err := db.Db.Save(&item).Error; err != nil {
+			if err := dbmanager.Db.Save(&item).Error; err != nil {
 				errors = append(errors, fmt.Errorf("could not add to cart: %s", err.Error()))
 			}
 		} else {
@@ -49,7 +49,7 @@ func AddToCartHandler(w http.ResponseWriter, r *http.Request) {
 				ProductID: req.ProductID,
 				Quantity:  req.Quantity,
 			}
-			if err := db.Db.Create(&newItem).Error; err != nil {
+			if err := dbmanager.Db.Create(&newItem).Error; err != nil {
 				errors = append(errors, fmt.Errorf("failed to update cart item: %w", err))
 			}
 		}

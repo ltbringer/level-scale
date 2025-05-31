@@ -34,27 +34,3 @@ services:
     depends_on:
       - db
     command: ["./app"]
-    healthcheck:
-      test: ["CMD-SHELL", "wget --spider --quiet --tries=1 --timeout=3 http://localhost:${SERVICE_PORT}/health || exit 1"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
-  test:
-    build:
-      context: .
-      dockerfile: containers/test.Dockerfile
-    environment:
-      ENVIRONMENT: test
-      DB_HOST: db
-      DB_PORT: ${DB_PORT}
-      DB_NAME: ${DB_NAME}
-      DB_USER: ${DB_USER}
-      DB_PASS: ${DB_PASS}
-      DB_SSL: False
-      JWT_SECRET: ${JWT_SECRET}
-      SERVICE_HOST: app
-      SERVICE_PORT: ${SERVICE_PORT}
-    depends_on:
-      - app
-    command: ["ginkgo", "run", "-p", "./tests/integration"]

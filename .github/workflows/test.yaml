@@ -11,12 +11,12 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      JWT_SECRET: ${{ secrets.MY_SECRET }}
-      DB_USER: ${{ DB_USER }}
-      DB_PASS: ${{ DB_PASS }}
-      DB_NAME: ${{ DB_NAME }}
-      DB_PORT: ${{ DB_PORT }}
-      SERVICE_PORT: ${{ SERVICE_PORT }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      DB_USER: ${{ secrets.DB_USER }}
+      DB_PASS: ${{ secrets.DB_PASS }}
+      DB_NAME: ${{ secrets.DB_NAME }}
+      DB_PORT: ${{ secrets.DB_PORT }}
+      SERVICE_PORT: ${{ secrets.SERVICE_PORT }}
 
     steps:
       - name: Checkout code

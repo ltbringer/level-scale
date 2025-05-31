@@ -26,30 +26,27 @@ check-env:
 		echo "✅ All DB env vars are set."; \
 	fi
 
-config:
-	@docker compose -f docker-compose-test.yaml config
+serve-config:
+	@docker compose -f docker-compose.yaml config
 
-compose-up:
+test-setup:
 	@docker compose -f docker-compose-test.yaml up --build --exit-code-from app
 
-compose-down:
+test-teardown:
 	@docker compose -f docker-compose-test.yaml down
 
-compose-logs:
-	@docker compose -f docker-compose-test.yaml logs -f
+serve-setup:
+	@docker compose -f docker-compose.yaml up --build
 
-compose-restart:
-	@docker compose -f docker-compose-test.yaml up --build --force-recreate
-
-# ----------------------------------------
-# Tests
-# ----------------------------------------
-
-test: check-env compose-up compose-down
+serve-teardown:
+	@docker compose -f docker-compose.yaml down
 
 # ----------------------------------------
-# Convenience
+# Run
 # ----------------------------------------
+
+test: check-env test-setup test-teardown
+serve: check-env serve-setup
 
 ps:
 	docker compose ps

@@ -1,4 +1,4 @@
-package db
+package dbmanager
 
 import (
 	"fmt"
@@ -20,12 +20,16 @@ type Config struct {
 
 var Db *gorm.DB
 
-func Init(c Config) {
+func CreateDsn(c *Config) string {
 	sslMode := "disable"
 	if c.Ssl {
 		sslMode = "enable"
 	}
-	dsn := fmt.Sprintf("host=%s User=%s Password=%s DbName=%s port=%d sslMode=%s", c.Host, c.User, c.Password, c.DbName, c.Port, sslMode)
+	return fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%d sslmode=%s", c.Host, c.User, c.Password, c.DbName, c.Port, sslMode)
+}
+
+func Init(c *Config) {
+	dsn := CreateDsn(c)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		logger.Log.Fatalw("Database initialization failed", "err", err)

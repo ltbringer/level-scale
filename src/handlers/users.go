@@ -24,7 +24,7 @@ type LoginPayload struct {
 	Password string `json:"password"`
 }
 
-func RegisterHandler(w http.ResponseWriter, r *http.Request) {
+func RegisterUser(w http.ResponseWriter, r *http.Request) {
 	var req RegisterPayload
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "invalid input", http.StatusBadRequest)
@@ -59,7 +59,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func LoginHandler(w http.ResponseWriter, r *http.Request) {
+func AuthenticateUser(w http.ResponseWriter, r *http.Request) {
 	var req LoginPayload
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "invalid input", http.StatusBadRequest)

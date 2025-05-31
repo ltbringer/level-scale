@@ -55,8 +55,7 @@ func CreateProductHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func GetAllProductsHandler(w http.ResponseWriter, r *http.Request) {
-	query := db.Db.Model(&models.Product{})
+func GetProducts(w http.ResponseWriter, r *http.Request) {
 	query := dbmanager.Db.Model(&models.Product{})
 
 	limit, err := strconv.Atoi(r.URL.Query().Get("limit"))

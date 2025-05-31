@@ -8,8 +8,6 @@ import (
 )
 
 var (
-	JWTSecret []byte
-	DbConfig  *db.Config
 	JWTSecret   []byte
 	DbConfig    *dbmanager.Config
 	ServicePort uint16
@@ -18,6 +16,7 @@ var (
 func Init() {
 	JWTSecret = []byte(getEnv("JWT_SECRET"))
 	DbConfig = dbConfigFromEnv()
+	ServicePort = parsePort("SERVICE_PORT")
 }
 
 func getEnv(key string) string {

@@ -15,7 +15,7 @@ type AddToCartRequest struct {
 	Quantity  uint8  `json:"quantity"`
 }
 
-func AddToCartHandler(w http.ResponseWriter, r *http.Request) {
+func UpsertCart(w http.ResponseWriter, r *http.Request) {
 	userID := middleware.GetUserID(r)
 
 	var cart models.Cart

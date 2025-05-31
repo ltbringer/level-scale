@@ -16,7 +16,7 @@ type ReturnRequest struct {
 	ReturnReason string `json:"reason"`
 }
 
-func ReturnItemsHandler(w http.ResponseWriter, r *http.Request) {
+func UndoOrder(w http.ResponseWriter, r *http.Request) {
 	userID := middleware.GetUserID(r)
 
 	var reqs []ReturnRequest

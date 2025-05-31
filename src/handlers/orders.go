@@ -14,7 +14,7 @@ type CheckoutRequest struct {
 	ShippingAddress string `json:"ShippingAddress"`
 }
 
-func CheckoutHandler(w http.ResponseWriter, r *http.Request) {
+func CreateOrder(w http.ResponseWriter, r *http.Request) {
 	userID := middleware.GetUserID(r)
 
 	var cart models.Cart

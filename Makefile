@@ -30,7 +30,7 @@ serve-config:
 	@docker compose -f docker-compose.yaml config
 
 test-setup:
-	@docker compose -f docker-compose-test.yaml up --build --exit-code-from app
+	@docker compose -f docker-compose-test.yaml up --build --exit-code-from test
 
 test-teardown:
 	@docker compose -f docker-compose-test.yaml down

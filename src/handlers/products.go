@@ -18,7 +18,7 @@ type CreateProductRequest struct {
 	Stock       uint16  `json:"stock"`
 }
 
-func CreateProductHandler(w http.ResponseWriter, r *http.Request) {
+func CreateProducts(w http.ResponseWriter, r *http.Request) {
 	userID := middleware.GetUserID(r)
 
 	var shop models.Shop

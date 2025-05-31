@@ -32,10 +32,11 @@ services:
     ports:
       - ${SERVICE_PORT}:${SERVICE_PORT}
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     command: ["./app"]
     healthcheck:
-      test: ["CMD-SHELL", "wget --spider --quiet --tries=1 --timeout=3 http://localhost:${SERVICE_PORT}/health || exit 1"]
+      test: ["CMD-SHELL", "curl -sf http://localhost:${SERVICE_PORT}/health > /dev/null"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -56,5 +57,6 @@ services:
       SERVICE_HOST: app
       SERVICE_PORT: ${SERVICE_PORT}
     depends_on:
-      - app
+      app:
+        condition: service_healthy
     command: ["ginkgo", "run", "-p", "./tests/integration"]

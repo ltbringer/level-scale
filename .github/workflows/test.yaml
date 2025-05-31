@@ -9,7 +9,6 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-
     env:
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
       DB_USER: ${{ secrets.DB_USER }}

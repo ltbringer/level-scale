@@ -41,6 +41,9 @@ serve-setup:
 serve-teardown:
 	@docker compose -f docker-compose.yaml down
 
+load-test:
+	@echo "GET http://localhost:8081/products" | vegeta attack -rate=200 -duration=5m | tee ./loadtest/results.bin | vegeta report
+
 # ----------------------------------------
 # Run
 # ----------------------------------------

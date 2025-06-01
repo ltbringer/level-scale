@@ -18,7 +18,7 @@ services:
   app:
     build:
       context: .
-      dockerfile: containers/main.Dockerfile
+      dockerfile: docker/main.Dockerfile
     environment:
       ENVIRONMENT: production
       DB_HOST: db
@@ -44,7 +44,7 @@ services:
   test:
     build:
       context: .
-      dockerfile: containers/test.Dockerfile
+      dockerfile: docker/test.Dockerfile
     environment:
       ENVIRONMENT: test
       DB_HOST: db

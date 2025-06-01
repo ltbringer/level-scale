@@ -11,6 +11,7 @@ import (
 
 func Init() http.Handler {
 	r := chi.NewRouter()
+	r.Use(middleware.MetricsMiddleware)
 	r.Get("/health", handlers.HealthCheck)
 	r.Post("/register", handlers.RegisterUser)
 	r.Post("/login", handlers.AuthenticateUser)

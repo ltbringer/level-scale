@@ -60,6 +60,16 @@ services:
       app:
         condition: service_healthy
 
+  nginx-exporter:
+    image: nginx/nginx-prometheus-exporter:latest
+    ports:
+      - "9113:9113"
+    command:
+      - "--nginx.scrape-uri=http://nginx:8081/stub_status"
+    depends_on:
+      nginx:
+        condition: service_started
+
   prometheus:
     image: prom/prometheus:latest
     ports:

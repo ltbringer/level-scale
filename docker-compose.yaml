@@ -18,7 +18,7 @@ services:
   app:
     build:
       context: .
-      dockerfile: containers/main.Dockerfile
+      dockerfile: docker/main.Dockerfile
     environment:
       ENVIRONMENT: production
       DB_HOST: db
@@ -31,6 +31,52 @@ services:
       SERVICE_PORT: ${SERVICE_PORT}
     ports:
       - ${SERVICE_PORT}:${SERVICE_PORT}
+      - "9091:9091"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     command: ["./app"]
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:${SERVICE_PORT}/health > /dev/null"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "8081:8081"
+    environment:
+      SERVICE_PORT: ${SERVICE_PORT}
+    volumes:
+      - ./nginx/nginx.conf.template:/etc/nginx/nginx.conf.template:ro
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        envsubst '$${SERVICE_PORT}' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf && \
+        nginx -g 'daemon off;'
+    depends_on:
+      app:
+        condition: service_healthy
+
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./metrics:/etc/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yaml"
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./metrics/provisioning:/etc/grafana/provisioning
+      - ./metrics/dashboards:/var/lib/grafana/dashboards
+
+volumes:
+  grafana-data:

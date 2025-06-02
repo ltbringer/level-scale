@@ -1,6 +1,8 @@
+# main.Dockerfile → production optimized
 # BUILD
 FROM golang:1.24-alpine AS builder
 
+ARG TARGETARCH
 WORKDIR /app
 
 # Copy go.mod and go.sum first to cache dependencies
@@ -11,7 +13,7 @@ COPY ../src ./src
 WORKDIR /app/src
 
 # Build the binary (statically linked, no CGO)
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o app
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=$TARGETARCH go build -o app
 
 # OPTIMIZE
 FROM alpine:3.19

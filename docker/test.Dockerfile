@@ -1,4 +1,4 @@
-# main.Dockerfile.test → test image with Go installed
+# test.Dockerfile → test image with Go installed
 FROM golang:1.24-alpine
 
 WORKDIR /app

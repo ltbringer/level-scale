@@ -1,0 +1,35 @@
+name: Build VM Image (MicroOS Snapshot)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'infra/images/hcloud-microos-snapshots.pkr.hcl'
+
+jobs:
+  vm-image-build:
+    name: Build VM Image with Packer
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Packer
+        uses: hashicorp/setup-packer@v3
+        with:
+          version: '1.10.0'
+
+      - name: Verify Packer version
+        run: packer --version
+
+      - name: Initialize Packer plugins
+        run: packer init infra/images/hcloud-microos-snapshots.pkr.hcl
+
+      - name: Build VM Image
+        env:
+          HCLOUD_TOKEN: ${{ secrets.PACKER_HCLOUD_TOKEN }}
+        run: |
+          packer build infra/images/hcloud-microos-snapshots.pkr.hcl

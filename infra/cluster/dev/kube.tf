@@ -147,88 +147,13 @@ module "kube-hetzner" {
       # the instructions regarding this type of setup in README.md: "Use only private IPs in your cluster".
       # disable_ipv4 = true
       # disable_ipv6 = true
-    },
-    {
-      name        = "control-plane-nbg1",
-      server_type = "cax11",
-      location    = "nbg1",
-      labels      = [],
-      taints      = [],
-      count       = 1
-
-      # Fine-grained control over placement groups (nodes in the same group are spread over different physical servers, 10 nodes per placement group max):
-      # placement_group = "default"
-
-      # Enable automatic backups via Hetzner (default: false)
-      # backups = true
-
-      # To disable public ips (default: false)
-      # WARNING: If both values are set to "true", your server will only be accessible via a private network. Make sure you have followed
-      # the instructions regarding this type of setup in README.md: "Use only private IPs in your cluster".
-      # disable_ipv4 = true
-      # disable_ipv6 = true
-    },
-    {
-      name        = "control-plane-hel1",
-      server_type = "cax11",
-      location    = "hel1",
-      labels      = [],
-      taints      = [],
-      count       = 1
-
-      # Fine-grained control over placement groups (nodes in the same group are spread over different physical servers, 10 nodes per placement group max):
-      # placement_group = "default"
-
-      # Enable automatic backups via Hetzner (default: false)
-      # backups = true
-
-      # To disable public ips (default: false)
-      # WARNING: If both values are set to "true", your server will only be accessible via a private network. Make sure you have followed
-      # the instructions regarding this type of setup in README.md: "Use only private IPs in your cluster".
-      # disable_ipv4 = true
-      # disable_ipv6 = true
     }
   ]
 
-  agent_nodepools = [
-    {
-      name        = "agent-fsn1-sm",
+  agent_nodepools = [{
+      name        = "storage-fsn1-sm",
       server_type = "cax11",
       location    = "fsn1",
-      labels      = [],
-      taints      = [],
-      count       = 1
-      # swap_size   = "2G" # remember to add the suffix, examples: 512M, 1G
-      # zram_size   = "2G" # remember to add the suffix, examples: 512M, 1G
-      # kubelet_args = ["kube-reserved=cpu=50m,memory=300Mi,ephemeral-storage=1Gi", "system-reserved=cpu=250m,memory=300Mi"]
-
-      # Fine-grained control over placement groups (nodes in the same group are spread over different physical servers, 10 nodes per placement group max):
-      # placement_group = "default"
-
-      # Enable automatic backups via Hetzner (default: false)
-      # backups = true
-    },
-    {
-      name        = "agent-nbg1-sm",
-      server_type = "cax11",
-      location    = "nbg1",
-      labels      = [],
-      taints      = [],
-      count       = 1
-      # swap_size   = "2G" # remember to add the suffix, examples: 512M, 1G
-      # zram_size   = "2G" # remember to add the suffix, examples: 512M, 1G
-      # kubelet_args = ["kube-reserved=cpu=50m,memory=300Mi,ephemeral-storage=1Gi", "system-reserved=cpu=250m,memory=300Mi"]
-
-      # Fine-grained control over placement groups (nodes in the same group are spread over different physical servers, 10 nodes per placement group max):
-      # placement_group = "default"
-
-      # Enable automatic backups via Hetzner (default: false)
-      # backups = true
-    },
-    {
-      name        = "storage-hel1-sm",
-      server_type = "cax11",
-      location    = "hel1",
       labels      = [
         "node.kubernetes.io/server-usage=storage"
       ],
@@ -252,6 +177,23 @@ module "kube-hetzner" {
       # Enable automatic backups via Hetzner (default: false)
       # backups = true
     },
+    {
+      name        = "agent-fsn1-sm",
+      server_type = "cax11",
+      location    = "fsn1",
+      labels      = [],
+      taints      = [],
+      count       = 1
+      # swap_size   = "2G" # remember to add the suffix, examples: 512M, 1G
+      # zram_size   = "2G" # remember to add the suffix, examples: 512M, 1G
+      # kubelet_args = ["kube-reserved=cpu=50m,memory=300Mi,ephemeral-storage=1Gi", "system-reserved=cpu=250m,memory=300Mi"]
+
+      # Fine-grained control over placement groups (nodes in the same group are spread over different physical servers, 10 nodes per placement group max):
+      # placement_group = "default"
+
+      # Enable automatic backups via Hetzner (default: false)
+      # backups = true
+    }
     # Egress nodepool useful to route egress traffic using Hetzner Floating IPs (https://docs.hetzner.com/cloud/floating-ips)
     # used with Cilium's Egress Gateway feature https://docs.cilium.io/en/stable/gettingstarted/egress-gateway/
     # See the https://github.com/kube-hetzner/terraform-hcloud-kube-hetzner#examples for an example use case.
@@ -272,7 +214,8 @@ module "kube-hetzner" {
   # Just note, that if Cilium with cilium_values, the responsibility of enabling of disabling Wireguard falls on you.
   # enable_wireguard = true
 
-  # * LB location and type, the latter will depend on how much load you want it to handle, see https://www.hetzner.com/cloud/load-balancer
+  # * LB location and type, the latter will depend on how much load you want it to handle
+  # See https://www.hetzner.com/cloud/load-balancer
   load_balancer_type     = "lb11"
   load_balancer_location = "fsn1"
 
@@ -462,8 +405,8 @@ module "kube-hetzner" {
   # hetzner_csi_version = ""
 
   # If you want to specify the Kured version, set it below - otherwise it'll use the latest version available.
-  # See https://github.com/kubereboot/kured/releases for the available versions.
-  # kured_version = ""
+  #  # See https://github.com/kubereboot/kured/releases for the available versions.
+  #  # kured_version = ""
 
   # Default is "traefik".
   # If you want to enable the Nginx (https://kubernetes.github.io/ingress-nginx/) or HAProxy ingress controller instead of Traefik, you can set this to "nginx" or "haproxy".
@@ -916,8 +859,8 @@ module "kube-hetzner" {
   # MicroOS snapshot IDs to be used. Per default empty, the most recent image created using createkh will be used.
   # We recommend the default, but if you want to use specific IDs you can.
   # You can fetch the ids with the hcloud cli by running the "hcloud image list --selector 'microos-snapshot=yes'" command.
-  # microos_x86_snapshot_id = "1234567"
-  # microos_arm_snapshot_id = "1234567"
+  microos_x86_snapshot_id = "242591242"
+  microos_arm_snapshot_id = "242591241"
 
   ### ADVANCED - Custom helm values for packages above (search _values if you want to located where those are mentioned upper in this file)
   # ⚠️ Inside the _values variable below are examples, up to you to find out the best helm values possible, we do not provide support for customized helm values.

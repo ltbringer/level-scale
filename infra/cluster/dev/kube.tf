@@ -8,7 +8,7 @@ locals {
   # If you choose to define it in the shell, this can be left as is.
 
   # Your Hetzner token can be found in your Project > Security > API Token (Read & Write is required).
-  hcloud_token = "xxxxxxxxxxx"
+  hcloud_token = var.hcloud_token
 }
 
 module "kube-hetzner" {
@@ -1044,29 +1044,4 @@ hostname: "rancher.example.com"
 replicas: 1
 bootstrapPassword: "supermario"
   EOT */
-
-}
-
-provider "hcloud" {
-  token = var.hcloud_token != "" ? var.hcloud_token : local.hcloud_token
-}
-
-terraform {
-  required_version = ">= 1.5.0"
-  required_providers {
-    hcloud = {
-      source  = "hetznercloud/hcloud"
-      version = ">= 1.49.1"
-    }
-  }
-}
-
-output "kubeconfig" {
-  value     = module.kube-hetzner.kubeconfig
-  sensitive = true
-}
-
-variable "hcloud_token" {
-  sensitive = true
-  default   = ""
 }

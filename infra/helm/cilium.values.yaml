@@ -1,0 +1,61 @@
+# Cilium values.yaml — Merged: Observability + Production tuned + WireGuard StrictMode + ARM safe
+
+# IPAM → Kubernetes-managed Pod IPs
+ipam:
+  mode: kubernetes
+
+# Kubernetes options
+k8s:
+  requireIPv4PodCIDR: true
+
+# Replace kube-proxy → use modern eBPF data plane
+kubeProxyReplacement: strict
+
+# Routing mode → native routing (no VXLAN)
+routingMode: native
+ipv4NativeRoutingCIDR: "10.0.0.0/8"
+
+# Advanced endpoint routing
+endpointRoutes:
+  enabled: true
+
+# Load balancer acceleration → native eBPF
+loadBalancer:
+  acceleration: native
+
+# BPF options
+bpf:
+  masquerade: true
+
+# Enable WireGuard encryption
+encryption:
+  enabled: true
+  type: wireguard
+  strictMode:
+    # pod to pod traffic is now encrypted.
+    enabled: true
+    cidr: "10.0.0.0/8"
+    allowRemoteNodeIdentities: false
+
+# MTU setting:
+# Default Ethernet MTU is 1500 bytes.
+# When using WireGuard encryption, extra header bytes are added (~50-60 bytes).
+# If Cilium sent 1500 byte packets >> WireGuard will make them 1560 >> causing fragmentation >> performance loss.
+# To prevent this, we reduce the MTU to 1450:
+MTU: 1450
+
+# Hubble observability stack
+hubble:
+  enabled: true
+  relay:
+    enabled: true
+  ui:
+    enabled: true
+
+# Since default Service CIDR is 10.43.0.0/16 → 10.43.0.1 is default API IP
+k8sServiceHost: "10.43.0.1"
+k8sServicePort: 6443
+
+# Recommended on ARM → force native ARM images
+image:
+  useDigest: false

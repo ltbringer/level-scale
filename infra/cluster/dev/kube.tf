@@ -127,7 +127,7 @@ module "kube-hetzner" {
   control_plane_nodepools = [
     {
       name        = "control-plane-fsn1",
-      server_type = "cx22",
+      server_type = "cax11",
       location    = "fsn1",
       labels      = [],
       taints      = [],
@@ -150,7 +150,7 @@ module "kube-hetzner" {
     },
     {
       name        = "control-plane-nbg1",
-      server_type = "cx22",
+      server_type = "cax11",
       location    = "nbg1",
       labels      = [],
       taints      = [],
@@ -170,7 +170,7 @@ module "kube-hetzner" {
     },
     {
       name        = "control-plane-hel1",
-      server_type = "cx22",
+      server_type = "cax11",
       location    = "hel1",
       labels      = [],
       taints      = [],
@@ -192,8 +192,8 @@ module "kube-hetzner" {
 
   agent_nodepools = [
     {
-      name        = "agent-small",
-      server_type = "cx22",
+      name        = "agent-fsn1-sm",
+      server_type = "cax11",
       location    = "fsn1",
       labels      = [],
       taints      = [],
@@ -209,12 +209,15 @@ module "kube-hetzner" {
       # backups = true
     },
     {
-      name        = "agent-large",
-      server_type = "cx32",
+      name        = "agent-nbg1-sm",
+      server_type = "cax11",
       location    = "nbg1",
       labels      = [],
       taints      = [],
       count       = 1
+      # swap_size   = "2G" # remember to add the suffix, examples: 512M, 1G
+      # zram_size   = "2G" # remember to add the suffix, examples: 512M, 1G
+      # kubelet_args = ["kube-reserved=cpu=50m,memory=300Mi,ephemeral-storage=1Gi", "system-reserved=cpu=250m,memory=300Mi"]
 
       # Fine-grained control over placement groups (nodes in the same group are spread over different physical servers, 10 nodes per placement group max):
       # placement_group = "default"
@@ -223,21 +226,28 @@ module "kube-hetzner" {
       # backups = true
     },
     {
-      name        = "storage",
-      server_type = "cx32",
-      location    = "fsn1",
-      # Fully optional, just a demo.
+      name        = "storage-hel1-sm",
+      server_type = "cax11",
+      location    = "hel1",
       labels      = [
         "node.kubernetes.io/server-usage=storage"
       ],
-      taints      = [],
+      taints      = [
+        "storage=postgres:NoSchedule"
+      ],
       count       = 1
+      # swap_size   = "2G" # remember to add the suffix, examples: 512M, 1G
+      # zram_size   = "2G" # remember to add the suffix, examples: 512M, 1G
+      # kubelet_args = ["kube-reserved=cpu=50m,memory=300Mi,ephemeral-storage=1Gi", "system-reserved=cpu=250m,memory=300Mi"]
 
       # In the case of using Longhorn, you can use Hetzner volumes instead of using the node's own storage by specifying a value from 10 to 10240 (in GB)
       # It will create one volume per node in the nodepool, and configure Longhorn to use them.
       # Something worth noting is that Volume storage is slower than node storage, which is achieved by not mentioning longhorn_volume_size or setting it to 0.
       # So for something like DBs, you definitely want node storage, for other things like backups, volume storage is fine, and cheaper.
-      # longhorn_volume_size = 20
+      # longhorn_volume_size = 40
+
+      # Fine-grained control over placement groups (nodes in the same group are spread over different physical servers, 10 nodes per placement group max):
+      # placement_group = "default"
 
       # Enable automatic backups via Hetzner (default: false)
       # backups = true
@@ -245,63 +255,15 @@ module "kube-hetzner" {
     # Egress nodepool useful to route egress traffic using Hetzner Floating IPs (https://docs.hetzner.com/cloud/floating-ips)
     # used with Cilium's Egress Gateway feature https://docs.cilium.io/en/stable/gettingstarted/egress-gateway/
     # See the https://github.com/kube-hetzner/terraform-hcloud-kube-hetzner#examples for an example use case.
-    {
-      name        = "egress",
-      server_type = "cx22",
-      location    = "fsn1",
-      labels = [
-        "node.kubernetes.io/role=egress"
-      ],
-      taints = [
-        "node.kubernetes.io/role=egress:NoSchedule"
-      ],
-      floating_ip = true
-      # Optionally associate a reverse DNS entry with the floating IP(s).
-      # This is useful in combination with the Egress Gateway feature for hosting certain services in the cluster, such as email servers.
-      # floating_ip_rns = "my.domain.com"
-      count = 1
-    },
-    # Arm based nodes
-    {
-      name        = "agent-arm-small",
-      server_type = "cax11",
-      location    = "fsn1",
-      labels      = [],
-      taints      = [],
-      count       = 1
-    },
-    # For fine-grained control over the nodes in a node pool, replace the count variable with a nodes map.
-    # In this case, the node-pool variables are defaults which can be overridden on a per-node basis.
-    # Each key in the nodes map refers to a single node and must be an integer string ("1", "123", ...).
-    {
-      name        = "agent-arm-medium",
-      server_type = "cax21",
-      location    = "fsn1",
-      labels      = [],
-      taints      = [],
-      nodes = {
-        "1" : {
-          location                  = "nbg1"
-          labels = [
-            "testing-labels=a1",
-          ]
-        },
-        "20" : {
-          labels = [
-            "testing-labels=b1",
-          ]
-        }
-      }
-    },
   ]
   # Add custom control plane configuration options here.
   # E.g to enable monitoring for etcd, proxy etc:
-  # control_planes_custom_config = {
-  #  etcd-expose-metrics = true,
-  #  kube-controller-manager-arg = "bind-address=0.0.0.0",
-  #  kube-proxy-arg ="metrics-bind-address=0.0.0.0",
-  #  kube-scheduler-arg = "bind-address=0.0.0.0",
-  # }
+  control_planes_custom_config = {
+   etcd-expose-metrics = true,
+   kube-controller-manager-arg = "bind-address=0.0.0.0",
+   kube-proxy-arg ="metrics-bind-address=0.0.0.0",
+   kube-scheduler-arg = "bind-address=0.0.0.0",
+  }
 
   # You can enable encrypted wireguard for the CNI by setting this to "true". Default is "false".
   # FYI, Hetzner says "Traffic between cloud servers inside a Network is private and isolated, but not automatically encrypted."
@@ -969,25 +931,7 @@ module "kube-hetzner" {
   # Cilium, all Cilium helm values can be found at https://github.com/cilium/cilium/blob/master/install/kubernetes/cilium/values.yaml
   # Be careful when maintaining your own cilium_values, as the choice of available settings depends on the Cilium version used. See also the cilium_version setting to fix a specific version.
   # The following is an example, please note that the current indentation inside the EOT is important.
-  /*   cilium_values = <<EOT
-ipam:
-  mode: kubernetes
-k8s:
-  requireIPv4PodCIDR: true
-kubeProxyReplacement: true
-routingMode: native
-ipv4NativeRoutingCIDR: "10.0.0.0/8"
-endpointRoutes:
-  enabled: true
-loadBalancer:
-  acceleration: native
-bpf:
-  masquerade: true
-encryption:
-  enabled: true
-  type: wireguard
-MTU: 1450
-  EOT */
+  cilium_values = file("../helm/cilium.values.yaml")
 
   # Cert manager, all cert-manager helm values can be found at https://github.com/cert-manager/cert-manager/blob/master/deploy/charts/cert-manager/values.yaml
   # The following is an example, please note that the current indentation inside the EOT is important.

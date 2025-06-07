@@ -10,5 +10,5 @@ variable "ssh_public_key" {
 
 variable "hcloud_token" {
   sensitive = true
-  default   = ""
+  type = string
 }

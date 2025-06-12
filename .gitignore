@@ -24,3 +24,8 @@ go.work.sum
 .idea/
 # vegeta load tests
 loadtest
+
+# kubeconfig.yaml has secrets.
+kubeconfig.yaml
+# state is maintained on tfcloud
+*.tfstate

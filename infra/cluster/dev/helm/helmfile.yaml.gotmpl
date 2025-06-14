@@ -11,7 +11,7 @@ releases:
     namespace: cert-manager
     createNamespace: true
     chart: jetstack/cert-manager
-    version: v1.14.4
+    version: v1.15.2
     values:
       - values/cert-manager.yaml
     set:
@@ -22,14 +22,16 @@ releases:
     namespace: o11y
     createNamespace: true
     chart: prometheus-community/prometheus
-    version: 25.21.0
+    version: 27.20.0
     values:
       - values/prometheus.yaml
 
   - name: grafana
     namespace: o11y
     chart: grafana/grafana
-    version: 7.3.9
+    version: 9.2.3
     values:
       - values/grafana.yaml
-      - secrets/grafana.enc.yaml
+    set:
+      - name: adminPassword
+        value: {{ requiredEnv "GRAFANA_PASS" }}

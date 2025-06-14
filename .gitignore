@@ -31,3 +31,4 @@ loadtest
 kubeconfig.yaml
 # state is maintained on tfcloud
 *.tfstate
+*.Identifier

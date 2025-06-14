@@ -1,0 +1,37 @@
+repositories:
+  - name: jetstack
+    url: https://charts.jetstack.io
+  - name: prometheus-community
+    url: https://prometheus-community.github.io/helm-charts
+  - name: grafana
+    url: https://grafana.github.io/helm-charts
+
+releases:
+  - name: cert-manager
+    namespace: cert-manager
+    createNamespace: true
+    chart: jetstack/cert-manager
+    version: v1.15.2
+    values:
+      - values/cert-manager.yaml
+    set:
+      - name: installCRDs
+        value: true
+
+  - name: prometheus
+    namespace: o11y
+    createNamespace: true
+    chart: prometheus-community/prometheus
+    version: 27.20.0
+    values:
+      - values/prometheus.yaml
+
+  - name: grafana
+    namespace: o11y
+    chart: grafana/grafana
+    version: 9.2.3
+    values:
+      - values/grafana.yaml
+    set:
+      - name: adminPassword
+        value: {{ requiredEnv "GRAFANA_PASS" }}

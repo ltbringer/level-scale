@@ -74,6 +74,12 @@ locals {
   install_packages = <<-EOT
     set -ex
     echo "First reboot successful, installing needed packages..."
+    # Downgrade util-linux to a known working version
+    transactional-update --continue shell <<- EOF
+    zypper install --oldpackage -y https://download.opensuse.org/repositories/Base:/System/openSUSE_Tumbleweed/x86_64/util-linux-2.40.4-1.1.x86_64.rpm
+    zypper addlock util-linux
+    EOF
+
     transactional-update --continue pkg install -y ${local.needed_packages}
     transactional-update --continue shell <<- EOF
     setenforce 0

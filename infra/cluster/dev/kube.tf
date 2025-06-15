@@ -874,12 +874,12 @@ module "kube-hetzner" {
   # Cilium, all Cilium helm values can be found at https://github.com/cilium/cilium/blob/master/install/kubernetes/cilium/values.yaml
   # Be careful when maintaining your own cilium_values, as the choice of available settings depends on the Cilium version used. See also the cilium_version setting to fix a specific version.
   # The following is an example, please note that the current indentation inside the EOT is important.
-  cilium_values = file("../../helm/cilium.values.yaml")
+  cilium_values = file("../helm_values/cilium.values.yaml")
 
   # Cert manager, all cert-manager helm values can be found at https://github.com/cert-manager/cert-manager/blob/master/deploy/charts/cert-manager/values.yaml
   # The following is an example, please note that the current indentation inside the EOT is important.
   # For cert-manager versions < v1.15.0, you need to set installCRDs: true instead of crds.enabled and crds.keep.
-  cert_manager_values = file("../../helm/cert-manager.values.yaml")
+  cert_manager_values = file("../helm_values/cert-manager.values.yaml")
 
   # csi-driver-smb, all csi-driver-smb helm values can be found at https://github.com/kubernetes-csi/csi-driver-smb/blob/master/charts/latest/csi-driver-smb/values.yaml
   # The following is an example, please note that the current indentation inside the EOT is important.

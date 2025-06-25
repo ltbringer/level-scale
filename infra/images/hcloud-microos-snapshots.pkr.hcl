@@ -74,18 +74,15 @@ locals {
   install_packages = <<-EOT
     set -ex
     echo "First reboot successful, installing needed packages..."
-    # Downgrade util-linux to a known working version
-    transactional-update --continue shell <<- EOF
-    zypper install --oldpackage -y https://download.opensuse.org/repositories/Base:/System/openSUSE_Tumbleweed/x86_64/util-linux-2.40.4-1.1.x86_64.rpm
-    zypper addlock util-linux
-    EOF
-
     transactional-update --continue pkg install -y ${local.needed_packages}
     transactional-update --continue shell <<- EOF
     setenforce 0
     rpm --import https://rpm.rancher.io/public.key
     zypper install -y https://github.com/k3s-io/k3s-selinux/releases/download/v1.6.stable.1/k3s-selinux-1.6-1.sle.noarch.rpm
     zypper addlock k3s-selinux
+    # Install util-linux 2.41 for aarch64 from the Base:System repository (pin the package so it is not updated unintentionally)
+    zypper install -y https://download.opensuse.org/repositories/Base:/System/openSUSE_Tumbleweed/aarch64/util-linux-2.41-5.6.aarch64.rpm
+    zypper addlock util-linux
     restorecon -Rv /etc/selinux/targeted/policy
     restorecon -Rv /var/lib
     setenforce 1
